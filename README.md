@@ -27,3 +27,17 @@ This project is a Flask web application that allows users to upload books in `.t
    ```bash
    git clone https://github.com/ibrardu/stochastic-llm.git
    cd stochastic-llm
+2. **Create and activate a virtual environment:**
+   ```bash
+   python3 -m venv env
+   source env/bin/activate  # On Windows use `env\Scripts\activate`
+3. **Install the required packages:**
+   ```bash
+   pip install -r requirements.txt
+5. **Run the Flask application:**
+   ```bash
+   python app.py
+5. **Open your web browser and navigate to `http://127.0.0.1:5000/`.**
+
+
+
