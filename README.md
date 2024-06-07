@@ -25,8 +25,8 @@ This project is a Flask web application that allows users to upload books in `.t
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/ibrardu/stochastic-llm.git
-   cd stochastic-llm
+   git clone https://github.com/ibrardu/llm.git
+   cd llm
 2. **Create and activate a virtual environment:**
    ```bash
    python3 -m venv env
