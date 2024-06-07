@@ -1,4 +1,4 @@
-# Stochastic LLM
+# LLM
 
 This project is a Flask web application that allows users to upload books in `.txt` format for training a GPT-2 model and then use the trained models to generate text based on user prompts.
 
