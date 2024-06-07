@@ -1,0 +1,5 @@
+Flask==2.0.1
+transformers==4.10.0
+datasets==1.11.0
+torch==1.9.0
+werkzeug==2.0.1

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train a New Model</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-placeholder">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo Placeholder">
+        </div>
+        <h1>Train a New Model</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="model_name">Model Name:</label>
+            <input type="text" id="model_name" name="model_name" required>
+            <label for="file">Upload a book (.txt):</label>
+            <input type="file" id="file" name="file" accept=".txt" required>
+            <button type="submit">Train</button>
+        </form>
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </div>
+    <div class="footer">
+        <p>Team Members: Alice, Bob, Charlie</p>
+        <p>Design By Ibrar Ahmad</p>
+    </div>
+</body>
+</html>
