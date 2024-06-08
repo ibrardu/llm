@@ -1,5 +1,9 @@
 Flask==2.0.1
-transformers==4.10.0
-datasets==1.11.0
-torch==1.9.0
+transformers
+datasets
+torch
 werkzeug==2.0.1
+python-dotenv==0.19.2
+regex
+sacremoses
+tokenizers
