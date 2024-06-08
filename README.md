@@ -34,10 +34,16 @@ This project is a Flask web application that allows users to upload books in `.t
 3. **Install the required packages:**
    ```bash
    pip install -r requirements.txt
+4. **Install additional packages if needed**:
+    ```bash
+    pip install --upgrade transformers datasets tokenizers
+    pip install regex sacremoses
+    ```
+   
 5. **Run the Flask application:**
    ```bash
    python app.py
-5. **Open your web browser and navigate to `http://127.0.0.1:5000/`.**
+6. **Open your web browser and navigate to `http://127.0.0.1:5000/`.**
 
-
+ 
 
