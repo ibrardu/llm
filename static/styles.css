@@ -1,53 +1,50 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
-}
-
-.container {
+    margin: 0;
+    padding: 0;
     text-align: center;
-    margin-bottom: 40px;
-}
-
-.logo-placeholder img {
-    width: 150px;
-    height: 150px;
-    display: block;
-    margin: 0 auto 20px auto;
 }
 
 h1 {
-    color: #333;
+    background-color: #4CAF50;
+    color: white;
+    padding: 20px;
 }
 
 form {
-    margin-bottom: 20px;
+    margin: 20px;
 }
 
 label {
     display: block;
-    margin: 10px 0 5px;
+    margin-top: 10px;
 }
 
-input, select, button {
-    padding: 8px;
-    margin-bottom: 10px;
+input[type="text"], input[type="file"] {
+    padding: 10px;
+    margin-top: 10px;
 }
 
 button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
     cursor: pointer;
 }
 
-#response {
+button:hover {
+    background-color: #45a049;
+}
+
+a {
+    display: block;
     margin-top: 20px;
+    color: #4CAF50;
+    text-decoration: none;
 }
 
-.footer {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #ccc;
-}
-
-.footer p {
-    margin: 5px 0;
+a:hover {
+    text-decoration: underline;
 }

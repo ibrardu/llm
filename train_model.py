@@ -1,41 +1,44 @@
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, Trainer, TrainingArguments
-from preprocess import load_stochastic_books
 import os
 
-MODEL_FOLDER = 'models'
+# Set the cache directory to a subdirectory in your project directory
+os.environ['TRANSFORMERS_CACHE'] = os.path.join ( os.getcwd ( ) , 'huggingface_cache' )
 
-def train(file_path, model_name):
-    # Load the dataset
-    dataset = load_stochastic_books(file_path)
+import torch
+from transformers import GPT2LMHeadModel , GPT2Tokenizer
 
-    # Load the tokenizer and model
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
 
-    def tokenize_function(examples):
-        return tokenizer(examples['text'], padding="max_length", truncation=True, max_length=512)
+# Define the training function
+def train_model(file_path , model_name) :
+    tokenizer = GPT2Tokenizer.from_pretrained ( 'gpt2' )
 
-    tokenized_datasets = dataset.map(tokenize_function, batched=True, num_proc=4, remove_columns=["text"])
+    with open ( file_path , 'r' ) as f :
+        text = f.read ( )
 
-    training_args = TrainingArguments(
-        output_dir="./results",
-        overwrite_output_dir=True,
-        num_train_epochs=3,
-        per_device_train_batch_size=2,
-        save_steps=10_000,
-        save_total_limit=2,
-    )
+    # Tokenize and encode the text
+    inputs = tokenizer ( text , return_tensors='pt' , max_length=512 , truncation=True )
+    model = GPT2LMHeadModel.from_pretrained ( 'gpt2' )
 
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=tokenized_datasets["train"],
-    )
+    # Fine-tune the model
+    model.train ( )
+    optimizer = torch.optim.AdamW ( model.parameters ( ) , lr=5e-5 )
 
-    trainer.train()
+    for epoch in range ( 3 ) :  # number of epochs
+        optimizer.zero_grad ( )
+        outputs = model ( **inputs , labels=inputs['input_ids'] )
+        loss = outputs.loss
+        loss.backward ( )
+        optimizer.step ( )
+        print ( f"Epoch {epoch + 1}, Loss: {loss.item ( )}" )
 
-    # Save the model
-    model_save_path = os.path.join(MODEL_FOLDER, model_name)
-    os.makedirs(model_save_path, exist_ok=True)
-    trainer.save_model(model_save_path)
-    tokenizer.save_pretrained(model_save_path)
+    # Save the trained model
+    model_save_path = os.path.join ( 'models' , f"{model_name}.pt" )
+    os.makedirs ( os.path.dirname ( model_save_path ) , exist_ok=True )
+    torch.save ( model.state_dict ( ) , model_save_path )
+    print ( f"Model saved to {model_save_path}" )
+
+
+# Example usage
+if __name__ == '__main__' :
+    file_path = 'uploads/HP1.txt'  # Update this path to your training file
+    model_name = 'harrypotter'  # Update this to your desired model name
+    train_model ( file_path , model_name )

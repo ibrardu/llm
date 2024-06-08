@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Training Status</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const eventSource = new EventSource(`/train_model?filename={{ filename }}`);
+            eventSource.onmessage = function(event) {
+                if (event.data === "complete") {
+                    document.getElementById("progress").innerText = "Training complete!";
+                    eventSource.close();
+                } else {
+                    document.getElementById("progress").innerText = `Training progress: ${event.data}%`;
+                }
+            };
+        });
+    </script>
+</head>
+<body>
+    <h1>Training Status</h1>
+    <p id="progress">Starting training...</p>
+</body>
+</html>

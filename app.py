@@ -1,67 +1,39 @@
+from flask import Flask , request , render_template , redirect , url_for
+from transformers import pipeline , GPT2LMHeadModel , GPT2Tokenizer
 import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from werkzeug.utils import secure_filename
-import threading
-import train_model
+import torch
 
-UPLOAD_FOLDER = 'uploads'
-MODEL_FOLDER = 'models'
+app = Flask ( __name__ )
+app.config['MODEL_FOLDER'] = 'models/'
+os.makedirs ( app.config['MODEL_FOLDER'] , exist_ok=True )
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Load the tokenizer
+tokenizer = GPT2Tokenizer.from_pretrained ( 'gpt2' )
 
-# Ensure the upload and model directories exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(MODEL_FOLDER, exist_ok=True)
 
-# Global variable to store available models
-def update_available_models():
-    return [name for name in os.listdir(MODEL_FOLDER) if os.path.isdir(os.path.join(MODEL_FOLDER, name))]
+@app.route ( '/' )
+def index() :
+    # Get the list of trained models
+    models = [f for f in os.listdir ( app.config['MODEL_FOLDER'] ) if f.endswith ( '.pt' )]
+    return render_template ( 'index.html' , models=models )
 
-available_models = update_available_models()
 
-@app.route('/')
-def index():
-    global available_models
-    available_models = update_available_models()
-    return render_template('index.html', models=available_models)
-
-@app.route('/train', methods=['GET', 'POST'])
-def train():
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            return redirect(request.url)
-        if file:
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            model_name = request.form['model_name']
-
-            # Start a new thread for training
-            thread = threading.Thread(target=train_model.train, args=(file_path, model_name))
-            thread.start()
-
-            return redirect(url_for('index'))
-    return render_template('train.html')
-
-@app.route('/generate', methods=['POST'])
-def generate():
+@app.route ( '/generate' , methods=['POST'] )
+def generate() :
     prompt = request.form['prompt']
     model_name = request.form['model']
-    model_path = os.path.join(MODEL_FOLDER, model_name)
 
-    # Load the selected model and tokenizer
-    model = GPT2LMHeadModel.from_pretrained(model_path)
-    tokenizer = GPT2Tokenizer.from_pretrained(model_path)
+    # Load the selected model
+    model = GPT2LMHeadModel.from_pretrained ( 'gpt2' )
+    model_path = os.path.join ( app.config['MODEL_FOLDER'] , model_name )
+    model.load_state_dict ( torch.load ( model_path ) )
+    model.eval ( )
 
-    inputs = tokenizer.encode(prompt, return_tensors='pt')
-    outputs = model.generate(inputs, max_length=200, num_return_sequences=1)
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return jsonify({'response': response})
+    # Generate text using the selected model
+    generator = pipeline ( 'text-generation' , model=model , tokenizer=tokenizer )
+    result = generator ( prompt , max_length=100 , num_return_sequences=1 )
+    return render_template ( 'result.html' , result=result[0]['generated_text'] )
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+
+if __name__ == '__main__' :
+    app.run ( debug=True )

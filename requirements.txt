@@ -1,8 +1,9 @@
 Flask==2.0.1
 transformers
 datasets
-torch
+torch==1.9.0
 werkzeug==2.0.1
+safetensors==0.3.0
 python-dotenv==0.19.2
 regex
 sacremoses
